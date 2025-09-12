@@ -1,0 +1,22 @@
+Start testing: Sep 12 15:59 +08
+----------------------------------------------------------
+1/1 Testing: Base64Tests
+1/1 Test: Base64Tests
+Command: "/home/user/cpp/base64_encode_decode/build/b64_tests"
+Directory: /home/user/cpp/base64_encode_decode/build
+"Base64Tests" start time: Sep 12 15:59 +08
+Output:
+----------------------------------------------------------
+Randomness seeded to: 3037418255
+===============================================================================
+All tests passed (15 assertions in 2 test cases)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Base64Tests" end time: Sep 12 15:59 +08
+"Base64Tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 12 15:59 +08
