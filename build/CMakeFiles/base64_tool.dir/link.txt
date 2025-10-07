@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/base64_tool.dir/src/main.cpp.o CMakeFiles/base64_tool.dir/src/cli_parser.cpp.o -o base64_tool  libbase64_lib.a 
