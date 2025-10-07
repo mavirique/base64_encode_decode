@@ -9,6 +9,7 @@
         "string_view": "cpp",
         "iostream": "cpp",
         "iosfwd": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "optional": "cpp"
     }
 }
