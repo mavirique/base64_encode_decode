@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/b64tool.dir/src/main.cpp.o -o b64tool  libbase64_lib.a 

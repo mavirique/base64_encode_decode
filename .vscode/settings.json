@@ -1,6 +1,14 @@
 {
     "files.associations": {
         "css": "tailwindcss",
-        "array": "cpp"
+        "array": "cpp",
+        "vector": "cpp",
+        "string": "cpp",
+        "cstddef": "cpp",
+        "span": "cpp",
+        "string_view": "cpp",
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "variant": "cpp"
     }
 }
