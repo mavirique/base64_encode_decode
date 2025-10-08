@@ -1,51 +1,68 @@
-// This tells Catch2 to provide a main() function for this test executable
-#define CATCH_CONFIG_MAIN
+#include "base64.hpp"
 #include <catch2/catch_test_macros.hpp>
-
-#include "base64.hpp" // The library we are testing
-#include <string>
 #include <string_view>
+#include <span>
+
+// Helper function to convert a std::vector<std::byte> to a std::string
+// This makes the tests cleaner.
+std::string to_string(const std::vector<std::byte>& bytes) {
+    return std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+}
+
 
 TEST_CASE("Base64 Encoding", "[base64]") {
-    // The to_bytes helper is no longer needed as the function now takes a string_view
-    SECTION("No Padding") {
-        REQUIRE(base64::encode("Man") == "TWFu");
+    SECTION("Encoding simple strings") {
+        // FIX: Use a std::string_view to create a span, then convert to bytes.
+        using namespace std::string_view_literals;
+        REQUIRE(base64::encode(std::as_bytes(std::span{"Man"sv})) == "TWFu");
     }
-    SECTION("One Padding Character") {
-        // Note: The original test case for "light work." was incorrect, "light work" is correct.
-        REQUIRE(base64::encode("light work") == "bGlnaHQgd29yaw==");
+
+    SECTION("Encoding with padding") {
+        using namespace std::string_view_literals;
+        REQUIRE(base64::encode(std::as_bytes(std::span{"light work"sv})) == "bGlnaHQgd29yaw==");
+        REQUIRE(base64::encode(std::as_bytes(std::span{"Hello"sv})) == "SGVsbG8=");
     }
-    SECTION("Two Padding Characters") {
-        REQUIRE(base64::encode("Hello") == "SGVsbG8=");
-    }
-    SECTION("Empty String") {
-        REQUIRE(base64::encode("") == "");
+
+    SECTION("Encoding an empty string") {
+        using namespace std::string_view_literals;
+        REQUIRE(base64::encode(std::as_bytes(std::span{""sv})) == "");
     }
 }
 
 TEST_CASE("Base64 Decoding", "[base64]") {
-    SECTION("No Padding") {
+    SECTION("Decoding simple strings") {
         auto decoded = base64::decode("TWFu");
         REQUIRE(decoded.has_value());
-        // The result is now a string, so we can compare directly
-        REQUIRE(*decoded == "Man");
+        // FIX: Convert the resulting vector of bytes to a string for comparison.
+        REQUIRE(to_string(*decoded) == "Man");
     }
-    SECTION("With Padding") {
+
+    SECTION("Decoding with padding") {
         auto decoded = base64::decode("SGVsbG8=");
         REQUIRE(decoded.has_value());
-        REQUIRE(*decoded == "Hello");
+        REQUIRE(to_string(*decoded) == "Hello");
     }
-    SECTION("Empty String") {
+
+    SECTION("Decoding an empty string") {
         auto decoded = base64::decode("");
         REQUIRE(decoded.has_value());
-        REQUIRE(decoded->empty());
+        REQUIRE(to_string(*decoded) == "");
     }
-    SECTION("Invalid Length") {
-        // The logic remains the same, just checking the optional
-        REQUIRE_FALSE(base64::decode("SGVsbG8").has_value()); // Missing padding
-        REQUIRE_FALSE(base64::decode("SGV").has_value());   // Length not multiple of 4
+
+    SECTION("Decoding invalid characters") {
+        // Invalid characters should result in std::nullopt
+        REQUIRE_FALSE(base64::decode("invalid$").has_value());
+        REQUIRE_FALSE(base64::decode("TWFu?").has_value());
     }
-    SECTION("Invalid Characters") {
-        REQUIRE_FALSE(base64::decode("TWF#").has_value());
+
+    SECTION("Decoding with incorrect padding") {
+        // Incorrect padding should result in failure.
+        REQUIRE_FALSE(base64::decode("SGVsbG8").has_value()); // Missing '='
+
+        // FIX: Replace the incorrect test case with a truly invalid one.
+        // "SGVsbA==" is the valid encoding for "Hell".
+        // "SGVsbC==" is INVALID because 'C' (value 2) has non-zero bits (000010)
+        // where padding rules require zeros for the final sextet.
+        REQUIRE_FALSE(base64::decode("SGVsbC==").has_value());
     }
 }
